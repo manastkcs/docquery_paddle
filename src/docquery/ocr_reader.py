@@ -40,6 +40,7 @@ except ImportError:
 try:
     from paddleocr import PaddleOCR # noqa
     OCR_AVAILABLE["paddle"] = True
+    print("paddle imported successfully")
 except ImportError:
     pass
 
