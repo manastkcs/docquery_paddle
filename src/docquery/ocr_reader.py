@@ -39,7 +39,7 @@ except ImportError:
 
 try:
     from paddleocr import PaddleOCR # noqa
-    OCR_AVAILABLE["paddle"] = False
+    OCR_AVAILABLE["paddle"] = True
 except ImportError:
     pass
 
