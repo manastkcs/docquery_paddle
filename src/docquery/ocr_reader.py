@@ -17,14 +17,14 @@ class NoOCRReaderFound(Exception):
 OCR_AVAILABLE = {
     "tesseract": False,
     "easyocr": False,
-    "dummy": True,
+    "paddle":False,
+    "dummy": True
 }
 
 try:
     import pytesseract  # noqa
-
     pytesseract.get_tesseract_version()
-    OCR_AVAILABLE["tesseract"] = True
+    OCR_AVAILABLE["tesseract"] = False
 except ImportError:
     pass
 except pytesseract.TesseractNotFoundError as e:
@@ -33,8 +33,13 @@ except pytesseract.TesseractNotFoundError as e:
 
 try:
     import easyocr  # noqa
+    OCR_AVAILABLE["easyocr"] = False
+except ImportError:
+    pass
 
-    OCR_AVAILABLE["easyocr"] = True
+try:
+    from paddleocr import PaddleOCR # noqa
+    OCR_AVAILABLE["paddle"] = False
 except ImportError:
     pass
 
@@ -140,6 +145,41 @@ class EasyOCRReader(OCRReader):
             )
 
 
+class PaddleReader(OCRReader):
+    def __init__(self):
+        super().__init__()
+        self.reader = None
+
+    def apply_ocr(self, image: "Image.Image") -> Tuple[List[str], List[List[int]]]:
+        """Applies Paddleocr on a document image, and returns recognized words + normalized bounding boxes."""
+        if not self.reader:
+            # TODO: expose language currently setting to english
+            self.reader = PaddleOCR(PaddleOCR(use_angle_cls=True, lang='en',show_log=False,drop_score=0.8))  # TODO: device here example: gpu=self.device > -1)
+
+        # apply OCR
+        data = self.reader.ocr(img, cls=True)
+        boxes, words_acc = list(map(list, zip(*res[0])))
+        words,acc = list(map(list, zip(*words_acc)))
+
+        # filter empty words and corresponding coordinates
+        irrelevant_indices = set(idx for idx, word in enumerate(words) if not word.strip())
+        words = [word for idx, word in enumerate(words) if idx not in irrelevant_indices]
+        boxes = [coords for idx, coords in enumerate(boxes) if idx not in irrelevant_indices]
+
+        # turn coordinates into (left, top, left+width, top+height) format
+        actual_boxes = [tl + br for tl, tr, br, bl in boxes]
+
+        return words, actual_boxes
+
+    @staticmethod
+    def _check_if_available():
+        if not OCR_AVAILABLE["paddle"]:
+            raise NoOCRReaderFound(
+                "Unable to use paddleocr (OCR will be unavailable). Install paddleocr to process images with OCR."
+            )
+
+
+
 class DummyOCRReader(OCRReader):
     def __init__(self):
         super().__init__()
@@ -156,7 +196,8 @@ class DummyOCRReader(OCRReader):
 OCR_MAPPING = {
     "tesseract": TesseractReader,
     "easyocr": EasyOCRReader,
-    "dummy": DummyOCRReader,
+    "paddle":PaddleReader,
+    "dummy": DummyOCRReader
 }
 
 

@@ -94,7 +94,7 @@ def main(args):
             try:
                 response = nlp(question=q, **d.context)
                 if isinstance(response, list):
-                    response = response[0] if len(response) > 0 else None
+                    response = response if len(response) > 0 else None
             except Exception:
                 log.error(f"Failed while processing {str(p)} on question: '{q}'")
                 raise
