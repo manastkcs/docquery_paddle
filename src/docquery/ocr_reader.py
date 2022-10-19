@@ -158,7 +158,7 @@ class PaddleReader(OCRReader):
             self.reader = PaddleOCR(use_angle_cls=True, lang='en',show_log=False,drop_score=0.8)  # TODO: device here example: gpu=self.device > -1)
 
         # apply OCR
-        data = self.reader.ocr(img, cls=True)
+        data = self.reader.ocr(image, cls=True)
         boxes, words_acc = list(map(list, zip(*res[0])))
         words,acc = list(map(list, zip(*words_acc)))
 
