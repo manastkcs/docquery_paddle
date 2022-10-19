@@ -80,7 +80,7 @@ class ModelType(ExplicitEnum):
 
 
 ImageOrName = Union["Image.Image", str]
-DEFAULT_MAX_ANSWER_LENGTH = 15
+DEFAULT_MAX_ANSWER_LENGTH = 30
 
 
 @add_end_docstrings(PIPELINE_INIT_ARGS)
@@ -435,6 +435,7 @@ class DocumentQuestionAnsweringPipeline(ChunkPipeline):
     def postprocess_extractive_qa(
         self, model_outputs, top_k=1, handle_impossible_answer=False, max_answer_len=None, **kwargs
     ):
+        top_k = 5
         min_null_score = 1000000  # large and positive
         answers = []
 
