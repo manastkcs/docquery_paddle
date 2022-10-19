@@ -100,7 +100,6 @@ class DocumentClassificationPipeline(ChunkPipeline):
         function_to_apply=None,
         top_k=None,
     ):
-        top_k = 5
         preprocess_params, postprocess_params = {}, {}
         if doc_stride is not None:
             preprocess_params["doc_stride"] = doc_stride
@@ -280,7 +279,6 @@ class DocumentClassificationPipeline(ChunkPipeline):
         return model_outputs
 
     def postprocess(self, model_outputs, function_to_apply=None, top_k=1, **kwargs):
-        top_k = 5
         if function_to_apply is None:
             if self.model.config.num_labels == 1:
                 function_to_apply = ClassificationFunction.SIGMOID

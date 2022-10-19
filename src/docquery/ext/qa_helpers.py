@@ -129,6 +129,5 @@ def select_starts_ends(
 
     # Mask CLS
     start[0, 0] = end[0, 0] = 0.0
-    top_k = 5
     starts, ends, scores = decode_spans(start, end, top_k, max_answer_len, undesired_tokens)
     return starts, ends, scores, min_null_score
