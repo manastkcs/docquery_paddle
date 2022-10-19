@@ -125,6 +125,7 @@ class DocumentQuestionAnsweringPipeline(ChunkPipeline):
         handle_impossible_answer=None,
         **kwargs,
     ):
+        top_k = 5
         preprocess_params, postprocess_params = {}, {}
         if padding is not None:
             preprocess_params["padding"] = padding
@@ -408,6 +409,7 @@ class DocumentQuestionAnsweringPipeline(ChunkPipeline):
         return model_outputs
 
     def postprocess(self, model_outputs, top_k=1, **kwargs):
+        top_k = 5
         if self.model_type == ModelType.VisionEncoderDecoder:
             answers = [self.postprocess_encoder_decoder_single(o) for o in model_outputs]
         else:
