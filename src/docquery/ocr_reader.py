@@ -155,7 +155,7 @@ class PaddleReader(OCRReader):
         """Applies Paddleocr on a document image, and returns recognized words + normalized bounding boxes."""
         if not self.reader:
             # TODO: expose language currently setting to english
-            self.reader = PaddleOCR(PaddleOCR(use_angle_cls=True, lang='en',show_log=False,drop_score=0.8))  # TODO: device here example: gpu=self.device > -1)
+            self.reader = PaddleOCR(use_angle_cls=True, lang='en',show_log=False,drop_score=0.8)  # TODO: device here example: gpu=self.device > -1)
 
         # apply OCR
         data = self.reader.ocr(img, cls=True)
